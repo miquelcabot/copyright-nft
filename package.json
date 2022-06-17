@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "NFT that represents the Copyright of a song",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/miquelcabot/copyright-nft.git"
@@ -16,6 +13,13 @@
     "url": "https://github.com/miquelcabot/copyright-nft/issues"
   },
   "homepage": "https://github.com/miquelcabot/copyright-nft#readme",
+  "scripts": {
+    "compile": "hardhat compile",
+    "hardhatnode": "hardhat node",
+    "console": "hardhat console",
+    "test": "hardhat test --network hardhat",
+    "deploy:localnet": "hardhat deploy --network hardhat"
+  },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
