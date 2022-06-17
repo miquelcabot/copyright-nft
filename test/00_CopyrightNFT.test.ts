@@ -13,7 +13,7 @@ describe('CopyrightNFT', () => {
   let owner: SignerWithAddress;
 
   beforeEach(async () => {
-    [ owner ] = await ethers.getSigners();
+    [owner] = await ethers.getSigners();
     const CopyrightNFT = await ethers.getContractFactory('CopyrightNFT');
     copyrightNFT = await CopyrightNFT.deploy();
     await copyrightNFT.deployed();
