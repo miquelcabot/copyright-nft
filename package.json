@@ -18,7 +18,12 @@
     "hardhatnode": "hardhat node",
     "console": "hardhat console",
     "test": "hardhat test --network hardhat",
-    "deploy:localnet": "hardhat deploy --network hardhat"
+    "deploy:localnet": "hardhat deploy --network hardhat",
+    "lint:sol": "hardhat check",
+    "lint:ts": "eslint . --ext .ts,.js --ignore-path .eslintignore",
+    "lint:ts-fix": "eslint . --fix --ext .ts,.js --ignore-path .eslintignore",
+    "prettier:sol": "prettier --write 'contracts/**/*.sol'",
+    "prettier:ts": "prettier --write '**/*.js' '**/*.ts'"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
@@ -31,11 +36,18 @@
     "@typescript-eslint/parser": "^4.22.0",
     "chai": "^4.3.4",
     "dotenv": "^8.2.0",
+    "eslint": "^7.25.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^8.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.4.0",
     "ethereum-waffle": "^3.3.0",
     "ethers": "^5.1.0",
     "hardhat": "^2.1.2",
     "hardhat-deploy": "^0.7.5",
     "hardhat-gas-reporter": "^1.0.4",
+    "prettier": "^2.2.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.7",
     "ts-node": "^10.8.1",
     "typescript": "^4.2.4"
   }
