@@ -24,9 +24,16 @@ contract ERC721 is Context, ERC165, IERC721Metadata {
 
     bytes4 internal constant _ERC721_RECEIVED = 0x150b7a02;
 
+    bytes4 internal constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
+    bytes4 internal constant _INTERFACE_ID_ERC721_METADATA = 0x5b5e139f;
+
     constructor(string memory name_, string memory symbol_) {
         _name = name_;
         _symbol = symbol_;
+
+        // register the supported interfaces to conform to ERC721 via ERC165
+        _registerInterface(_INTERFACE_ID_ERC721);
+        _registerInterface(_INTERFACE_ID_ERC721_METADATA);
     }
 
     function name() external view override returns (string memory) {
