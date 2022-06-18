@@ -216,7 +216,10 @@ contract ERC721 is Context, IERC721Metadata {
             ownerOf(tokenId) == from,
             "ERC721: you can't transfer from incorrect owner"
         );
-        require(to != address(0), "ERC721: you can't transfer to the zero address");
+        require(
+            to != address(0),
+            "ERC721: you can't transfer to the zero address"
+        );
 
         // Clear approvals from the previous owner
         _approve(address(0), tokenId);
@@ -237,6 +240,32 @@ contract ERC721 is Context, IERC721Metadata {
         _transfer(from, to, tokenId);
         require(
             _checkOnERC721Received(from, to, tokenId, _data),
+            "ERC721: you can't transfer to non ERC721Receiver implementer"
+        );
+    }
+
+    function _mint(address to, uint256 tokenId) internal {
+        require(to != address(0), "ERC721: you can't mint to the zero address");
+        require(!_exists(tokenId), "ERC721: token already minted");
+
+        _owners[tokenId] = to;
+        _balances[to] = _balances[to].add(1);
+
+        emit Transfer(address(0), to, tokenId);
+    }
+
+    function _safeMint(address to, uint256 tokenId) internal {
+        _safeMint(to, tokenId, "");
+    }
+
+    function _safeMint(
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) internal {
+        _mint(to, tokenId);
+        require(
+            _checkOnERC721Received(address(0), to, tokenId, _data),
             "ERC721: you can't transfer to non ERC721Receiver implementer"
         );
     }
