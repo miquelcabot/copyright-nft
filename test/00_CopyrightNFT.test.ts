@@ -40,6 +40,9 @@ describe('CopyrightNFT', () => {
     });
   });
 
+  /**
+   * Ownership
+   */
   describe('Ownership', () => {
     it('Check owner', async () => {
       expect(await copyrightNFT.owner()).to.be.equal(owner.address);
@@ -58,6 +61,9 @@ describe('CopyrightNFT', () => {
     });
   });
 
+  /**
+   * Minter
+   */
   describe('Minter', () => {
     it('Minter is ZERO ADDRESS befor we have set it', async () => {
       expect(await copyrightNFT.minter()).to.be.equal(ZERO_ADDRESS);
@@ -75,6 +81,9 @@ describe('CopyrightNFT', () => {
     });
   });
 
+  /**
+   * Mint
+   */
   describe('Mint', () => {
     beforeEach(async () => {
       await copyrightNFT.connect(owner).setMinter(minter.address);
@@ -93,6 +102,24 @@ describe('CopyrightNFT', () => {
       // after minting, we have a balance of 1
       expect(await copyrightNFT.balanceOf(user1.address)).to.be.equal(1);
       expect(await copyrightNFT.ownerOf(1)).to.be.equal(user1.address);
+    });
+  });
+
+  /**
+   * Approval for all
+   */
+   describe('Approval for all', () => {
+    it("You can't approve the owner", async () => {
+      await expect(copyrightNFT.connect(user1).setApprovalForAll(user1.address, true)).to.be.reverted;
+    });
+
+    it('Approve for all another user', async () => {
+      // before approving, user2 is not approved for all user1
+      expect(await copyrightNFT.isApprovedForAll(user1.address, user2.address)).to.be.equal(false);
+      // approve for all user2
+      await copyrightNFT.connect(user1).setApprovalForAll(user2.address, true)
+      // after approving, user2 is approved for all user1
+      expect(await copyrightNFT.isApprovedForAll(user1.address, user2.address)).to.be.equal(true);
     });
   });
 });
