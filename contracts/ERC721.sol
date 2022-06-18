@@ -120,6 +120,40 @@ contract ERC721 is Context, IERC721Metadata {
         return _tokenApprovals[tokenId];
     }
 
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public override {
+        require(
+            _isApprovedOrOwner(_msgSender(), tokenId),
+            "ERC721: you can't transfer if you aren't the owner nor approved"
+        );
+
+        _transfer(from, to, tokenId);
+    }
+
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public override {
+        safeTransferFrom(from, to, tokenId, "");
+    }
+
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) public override {
+        require(
+            _isApprovedOrOwner(_msgSender(), tokenId),
+            "ERC721: you can't transfer if you aren't the owner nor approved"
+        );
+        _safeTransfer(from, to, tokenId, _data);
+    }
+
     /* === INTERNAL FUNCTIONS === */
 
     function _exists(uint256 tokenId) internal view returns (bool) {
@@ -151,5 +185,54 @@ contract ERC721 is Context, IERC721Metadata {
     function _approve(address to, uint256 tokenId) internal {
         _tokenApprovals[tokenId] = to;
         emit Approval(ownerOf(tokenId), to, tokenId);
+    }
+
+    function _isApprovedOrOwner(address spender, uint256 tokenId)
+        internal
+        view
+        returns (bool)
+    {
+        require(
+            _exists(tokenId),
+            "ERC721: you can't query a nonexistent token"
+        );
+        address owner = ownerOf(tokenId);
+        return (spender == owner ||
+            isApprovedForAll(owner, spender) ||
+            getApproved(tokenId) == spender);
+    }
+
+    function _transfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal {
+        require(
+            ownerOf(tokenId) == from,
+            "ERC721: you can't transfer from incorrect owner"
+        );
+        require(to != address(0), "ERC721: you can't transfer to the zero address");
+
+        // Clear approvals from the previous owner
+        _approve(address(0), tokenId);
+
+        _balances[from] = _balances[from].sub(1);
+        _balances[to] = _balances[to].add(1);
+        _owners[tokenId] = to;
+
+        emit Transfer(from, to, tokenId);
+    }
+
+    function _safeTransfer(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) internal {
+        _transfer(from, to, tokenId);
+        require(
+            _checkOnERC721Received(from, to, tokenId, _data),
+            "ERC721: you can't transfer to non ERC721Receiver implementer"
+        );
     }
 }
