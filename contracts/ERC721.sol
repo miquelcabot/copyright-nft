@@ -34,4 +34,13 @@ contract ERC721 is Context {
         );
         return _balances[owner];
     }
+
+    function ownerOf(uint256 tokenId) public view returns (address) {
+        address owner = _owners[tokenId];
+        require(
+            owner != address(0),
+            "ERC721: you can't query the ownership for nonexistent token"
+        );
+        return owner;
+    }
 }
