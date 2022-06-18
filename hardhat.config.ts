@@ -6,6 +6,7 @@ import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-solhint';
 import 'hardhat-deploy';
 import 'hardhat-gas-reporter';
+import 'solidity-coverage';
 
 dotenvConfig({ path: resolve(__dirname, './.env') });
 
