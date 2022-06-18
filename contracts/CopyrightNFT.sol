@@ -18,4 +18,18 @@ contract CopyrightNFT is Ownable, ERC721 {
     constructor(string memory name_, string memory symbol_)
         ERC721(name_, symbol_)
     {}
+
+    /* === CONTROL FUNCTIONS === */
+
+    function setBaseURI(string memory baseURI_) external onlyOwner {
+        _setBaseURI(baseURI_);
+    }
+
+    function setTokenURI(uint256 tokenId, string memory _tokenURI) public {
+        require(
+            _isApprovedOrOwner(_msgSender(), tokenId),
+            "ERC721: transfer caller is not owner nor approved"
+        );
+        _setTokenURI(tokenId, _tokenURI);
+    }
 }
