@@ -7,8 +7,9 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "./utils/AddressUtils.sol";
 import "./interfaces/IERC721Metadata.sol";
 import "./interfaces/IERC721TokenReceiver.sol";
+import "./ERC165.sol";
 
-contract ERC721 is Context, IERC721Metadata {
+contract ERC721 is Context, ERC165, IERC721Metadata {
     using SafeMath for uint256;
     using AddressUtils for address;
 
