@@ -26,4 +26,12 @@ contract ERC721 is Context {
     function symbol() external view returns (string memory) {
         return _symbol;
     }
+
+    function balanceOf(address owner) external view returns (uint256) {
+        require(
+            owner != address(0),
+            "ERC721: you can't query the balance of the zero address"
+        );
+        return _balances[owner];
+    }
 }
