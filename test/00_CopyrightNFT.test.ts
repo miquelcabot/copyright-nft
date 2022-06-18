@@ -11,6 +11,7 @@ const { expect } = chai;
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const NFT_NAME = 'Music NFT';
 const NFT_SYMBOL = 'MNFT';
+const BASE_URI = 'https://example.com/nft';
 
 describe('CopyrightNFT', () => {
   let copyrightNFT: Contract;
@@ -210,6 +211,34 @@ describe('CopyrightNFT', () => {
       // after transfer, we have a balance of 1
       expect(await copyrightNFT.balanceOf(user2.address)).to.be.equal(1);
       expect(await copyrightNFT.ownerOf(1)).to.be.equal(user2.address);
+    });
+  });
+
+  /**
+   * BaseURI and TokenURI
+   */
+   describe('BaseURI and TokenURI', () => {
+    beforeEach(async () => {
+      await copyrightNFT.connect(owner).setMinter(minter.address);
+      await copyrightNFT.connect(minter).mint(user1.address);
+    });
+
+    it("Non owner can't set BaseURI", async () => {
+      await expect(copyrightNFT.connect(user1).setBaseURI(BASE_URI)).to.be.reverted;
+    });
+
+    it('Owner can set BaseURI', async () => {
+      await copyrightNFT.connect(owner).setBaseURI(BASE_URI);
+      expect(await copyrightNFT.baseURI()).to.be.equal(BASE_URI);
+    });
+
+    it("Non owner of NFT can't set TokenURI", async () => {
+      await expect(copyrightNFT.connect(user2).setTokenURI(BASE_URI)).to.be.reverted;
+    });
+
+    it('Owner of NFT can set TokenURI', async () => {
+      await copyrightNFT.connect(user1).setTokenURI(1, BASE_URI);
+      expect(await copyrightNFT.tokenURI(1)).to.be.equal(BASE_URI);
     });
   });
 });
