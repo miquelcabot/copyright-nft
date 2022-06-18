@@ -94,6 +94,32 @@ contract ERC721 is Context, IERC721Metadata {
         return _operatorApprovals[owner][operator];
     }
 
+    function approve(address to, uint256 tokenId) public override {
+        address owner = ownerOf(tokenId);
+        require(to != owner, "ERC721: you can't approve the owner");
+
+        require(
+            _msgSender() == owner || isApprovedForAll(owner, _msgSender()),
+            "ERC721: you can't approve if you aren't owner nor approved for all"
+        );
+
+        _approve(to, tokenId);
+    }
+
+    function getApproved(uint256 tokenId)
+        public
+        view
+        override
+        returns (address)
+    {
+        require(
+            _exists(tokenId),
+            "ERC721: you can't check approved for nonexistent token"
+        );
+
+        return _tokenApprovals[tokenId];
+    }
+
     /* === INTERNAL FUNCTIONS === */
 
     function _exists(uint256 tokenId) internal view returns (bool) {
@@ -120,5 +146,10 @@ contract ERC721 is Context, IERC721Metadata {
         require(owner != operator, "ERC721: you can't approve the owner");
         _operatorApprovals[owner][operator] = approved;
         emit ApprovalForAll(owner, operator, approved);
+    }
+
+    function _approve(address to, uint256 tokenId) internal {
+        _tokenApprovals[tokenId] = to;
+        emit Approval(ownerOf(tokenId), to, tokenId);
     }
 }
