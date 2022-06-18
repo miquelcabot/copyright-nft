@@ -4,10 +4,13 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "./utils/AddressUtils.sol";
 import "./interfaces/IERC721Metadata.sol";
+import "./interfaces/IERC721TokenReceiver.sol";
 
 contract ERC721 is Context, IERC721Metadata {
     using SafeMath for uint256;
+    using AddressUtils for address;
 
     string private _name;
     string private _symbol;
@@ -17,6 +20,8 @@ contract ERC721 is Context, IERC721Metadata {
     mapping(address => uint256) private _balances;
     mapping(uint256 => address) private _tokenApprovals;
     mapping(address => mapping(address => bool)) private _operatorApprovals;
+
+    bytes4 internal constant _ERC721_RECEIVED = 0x150b7a02;
 
     constructor(string memory name_, string memory symbol_) {
         _name = name_;
@@ -234,5 +239,24 @@ contract ERC721 is Context, IERC721Metadata {
             _checkOnERC721Received(from, to, tokenId, _data),
             "ERC721: you can't transfer to non ERC721Receiver implementer"
         );
+    }
+
+    function _checkOnERC721Received(
+        address _from,
+        address _to,
+        uint256 _tokenId,
+        bytes memory _data
+    ) private returns (bool) {
+        if (_to.isContract()) {
+            bytes4 retval = IERC721TokenReceiver(_to).onERC721Received(
+                _msgSender(),
+                _from,
+                _tokenId,
+                _data
+            );
+            return retval == _ERC721_RECEIVED;
+        } else {
+            return true;
+        }
     }
 }
