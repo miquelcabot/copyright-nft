@@ -100,6 +100,18 @@ contract ERC721 is Context, IERC721Metadata {
         return _owners[tokenId] != address(0);
     }
 
+    function _setBaseURI(string memory baseURI_) internal {
+        _baseURI = baseURI_;
+    }
+
+    function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal {
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: you can't set the URI for nonexistent token"
+        );
+        _tokenURIs[tokenId] = _tokenURI;
+    }
+
     function _setApprovalForAll(
         address owner,
         address operator,
