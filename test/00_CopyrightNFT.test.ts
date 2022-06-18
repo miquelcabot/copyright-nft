@@ -122,4 +122,31 @@ describe('CopyrightNFT', () => {
       expect(await copyrightNFT.isApprovedForAll(user1.address, user2.address)).to.be.equal(true);
     });
   });
+
+ /**
+   * Approve
+   */
+  describe('Approve', () => {
+    beforeEach(async () => {
+      await copyrightNFT.connect(owner).setMinter(minter.address);
+      await copyrightNFT.connect(minter).mint(user1.address);
+    });
+
+    it("You can't approve the owner", async () => {
+      await expect(copyrightNFT.connect(user1).approve(user1.address, 1)).to.be.reverted;
+    });
+
+    it("You can't approve if you aren't owner nor approved for all", async () => {
+      await expect(copyrightNFT.connect(minter).approve(user1.address, 1)).to.be.reverted;
+    });
+
+    it('Approve another user', async () => {
+      // before approving, user2 is not approved for token 1
+      expect(await copyrightNFT.getApproved(1)).to.be.equal(ZERO_ADDRESS);
+      // approve for all user2
+      await copyrightNFT.connect(user1).approve(user2.address, 1)
+      // after approving, user2 is approved for token 1
+      expect(await copyrightNFT.getApproved(1)).to.be.equal(user2.address);
+    });
+  });
 });
