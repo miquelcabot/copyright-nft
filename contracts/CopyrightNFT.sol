@@ -15,11 +15,35 @@ import "./ERC721.sol";
 contract CopyrightNFT is Ownable, ERC721 {
     using SafeMath for uint256;
 
+    // address of minter user
+    address internal _minter;
+    // counter for token ids
+    uint256 internal _tokenCounter;
+
     constructor(string memory name_, string memory symbol_)
         ERC721(name_, symbol_)
-    {}
+    {
+        // we start with token id 1
+        _tokenCounter = 1;
+    }
+
+    function minter() external view returns (address) {
+        return _minter;
+    }
+
+    function mint(address receiver) external onlyMinter {
+        // no need to check receiver, will be taken care of by
+        // underlying mint function
+        _safeMint(receiver, _tokenCounter);
+        // increment token counter
+        _tokenCounter = _tokenCounter.add(1);
+    }
 
     /* === CONTROL FUNCTIONS === */
+
+    function setMinter(address minter_) external onlyOwner {
+        _setMinter(minter_);
+    }
 
     function setBaseURI(string memory baseURI_) external onlyOwner {
         _setBaseURI(baseURI_);
@@ -28,8 +52,30 @@ contract CopyrightNFT is Ownable, ERC721 {
     function setTokenURI(uint256 tokenId, string memory _tokenURI) public {
         require(
             _isApprovedOrOwner(_msgSender(), tokenId),
-            "ERC721: transfer caller is not owner nor approved"
+            "ERC721: you can't set token URI from a caller that is not owner nor approved"
         );
         _setTokenURI(tokenId, _tokenURI);
+    }
+
+    /* === INTERNAL FUNCTIONS === */
+
+    function _setMinter(address minter_) internal {
+        require(
+            minter_ != address(0),
+            "ERC721: you can't set minter to the zero address"
+        );
+        require(minter_ != _minter, "ERC721: you can't set minter to the same address");
+        _minter = minter_;
+    }
+
+    function _isMinter(address _minterAddress) internal view returns (bool) {
+        return _minterAddress == _minter;
+    }
+
+    /* === MODIFIERS === */
+
+    modifier onlyMinter() {
+        require(_msgSender() == _minter);
+        _;
     }
 }
