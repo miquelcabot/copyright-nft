@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./ERC721.sol";
 
 /// @title  NFT that represents a copyright for a song
@@ -39,6 +40,15 @@ contract CopyrightNFT is Ownable, ERC721 {
         _tokenCounter = _tokenCounter.add(1);
     }
 
+    function redeem(bytes calldata signature) external {
+        bytes32 dataHash = keccak256(abi.encodePacked(msg.sender));
+        bytes32 digest = ECDSA.toEthSignedMessageHash(dataHash);
+        address signer = ECDSA.recover(digest, signature);
+        require(_isMinter(signer), "ERC721: invalid signature for redeem");
+        _safeMint(msg.sender, _tokenCounter);
+        _tokenCounter = _tokenCounter.add(1);
+    }
+
     /* === CONTROL FUNCTIONS === */
 
     function setMinter(address minter_) external onlyOwner {
@@ -64,7 +74,10 @@ contract CopyrightNFT is Ownable, ERC721 {
             minter_ != address(0),
             "ERC721: you can't set minter to the zero address"
         );
-        require(minter_ != _minter, "ERC721: you can't set minter to the same address");
+        require(
+            minter_ != _minter,
+            "ERC721: you can't set minter to the same address"
+        );
         _minter = minter_;
     }
 
