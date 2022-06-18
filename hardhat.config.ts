@@ -20,7 +20,8 @@ const MNEMONIC = process.env.MNEMONIC || '';
 const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY || '';
 const INFURA_API_KEY = process.env.INFURA_API_KEY || '';
 const MATIC_RPC = process.env.MATIC_RPC || 'https://rpc-mainnet.maticvigil.com';
-const MUMBAI_RPC = process.env.MUMBAI_RPC || 'https://rpc-mumbai.maticvigil.com';
+const MUMBAI_RPC =
+  process.env.MUMBAI_RPC || 'https://rpc-mumbai.maticvigil.com';
 
 const getInfuraURL = (network: string) => {
   return `https://${network}.infura.io/v3/${INFURA_API_KEY}`;
