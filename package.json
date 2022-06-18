@@ -19,6 +19,8 @@
     "console": "hardhat console",
     "test": "hardhat test --network hardhat",
     "deploy:localnet": "hardhat deploy --network hardhat",
+    "deploy:matic": "hardhat deploy --network matic",
+    "deploy:mumbai": "hardhat deploy --network mumbai",
     "lint:sol": "hardhat check",
     "lint:ts": "eslint . --ext .ts,.js --ignore-path .eslintignore",
     "lint:ts-fix": "eslint . --fix --ext .ts,.js --ignore-path .eslintignore",
