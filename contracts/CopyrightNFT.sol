@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
+import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import "./ERC20Template.sol";
 import "./ERC721.sol";
 
@@ -15,7 +17,7 @@ import "./ERC721.sol";
 ///         profits for its use
 /// @dev    This implementation follows the EIP-721 standard
 ///         (https://eips.ethereum.org/EIPS/eip-721)
-contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721 {
+contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
     using SafeMath for uint256;
 
     string internal constant _ERC20_NAME = "Music ERC20 Token";
@@ -42,6 +44,7 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721 {
 
     constructor(string memory name_, string memory symbol_)
         ERC721(name_, symbol_)
+        EIP712(name_, "1.0.0")
     {
         // we start with token id 1
         _tokenCounter = 1;
@@ -83,19 +86,6 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721 {
         return _copyrightBalances[owner];
     }
 
-    function mint(address receiver, Metadata memory metadata_)
-        external
-        onlyMinter
-    {
-        // no need to check receiver, will be taken care of by
-        // underlying mint function
-        _safeMint(receiver, _tokenCounter);
-        _setMetadata(_tokenCounter, metadata_);
-        _deployERC20Token(_tokenCounter);
-        // increment token counter
-        _tokenCounter = _tokenCounter.add(1);
-    }
-
     function buySong(uint256 tokenId) external payable {
         require(_exists(tokenId), "ERC721: you can't buy nonexistent token");
         require(
@@ -116,12 +106,36 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721 {
         }
     }
 
-    function redeem(bytes calldata signature) external {
-        bytes32 dataHash = keccak256(abi.encodePacked(msg.sender));
-        bytes32 digest = ECDSA.toEthSignedMessageHash(dataHash);
-        address signer = ECDSA.recover(digest, signature);
-        require(_isMinter(signer), "ERC721: invalid signature for redeem");
-        _safeMint(msg.sender, _tokenCounter);
+
+    function mint(address receiver, Metadata memory metadata_)
+        external
+        onlyMinter
+    {
+        // no need to check receiver, will be taken care of by
+        // underlying mint function
+        _safeMint(receiver, _tokenCounter);
+        _setMetadata(_tokenCounter, metadata_);
+        _deployERC20Token(_tokenCounter);
+        // increment token counter
+        _tokenCounter = _tokenCounter.add(1);
+    }
+
+    function redeem(address receiver, Metadata memory metadata_, address signer, bytes calldata signature) external {
+        bytes32 dataHash = _hashTypedDataV4(keccak256(abi.encode(
+            keccak256("NFT(string songName,string artist,string album,string songURL,address account)"),
+            metadata_.songName,
+            metadata_.artist,
+            metadata_.album,
+            metadata_.songURL,
+            receiver
+        )));
+        require(SignatureChecker.isValidSignatureNow(signer, dataHash, signature), "ERC721: invalid signature for redeem");
+        require(_isMinter(signer), "ERC721: signer is not a minter");
+
+        _safeMint(receiver, _tokenCounter);
+        _setMetadata(_tokenCounter, metadata_);
+        _deployERC20Token(_tokenCounter);
+        // increment token counter
         _tokenCounter = _tokenCounter.add(1);
     }
 
@@ -181,8 +195,8 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721 {
     function _deployERC20Token(uint256 tokenId) internal {
         // create ERC20 token
         ERC20Template erc20token = new ERC20Template(
-            string.concat(_ERC20_NAME, " ", Strings.toString(tokenId)),
-            string.concat(_ERC20_SYMBOL, Strings.toString(tokenId))
+            string(abi.encodePacked(_ERC20_NAME, " ", Strings.toString(tokenId))),
+            string(abi.encodePacked(_ERC20_SYMBOL, Strings.toString(tokenId)))
         );
         _erc20token[tokenId] = address(erc20token);
     }
