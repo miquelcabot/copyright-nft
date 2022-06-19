@@ -5,11 +5,9 @@ pragma solidity ^0.8.0;
 /// @author Miquel A. Cabot
 /// @dev Collection of functions related to the address type
 library AddressUtils {
-    /**
-     * @dev Returns whether the target address is a contract.
-     * @param _addr Address to check.
-     * @return bool true if _addr is a contract, false if not.
-     */
+    /// @dev Returns whether the target address is a contract.
+    /// @param _addr Address to check.
+    /// @return bool true if _addr is a contract, false if not.
     function isContract(address _addr) internal view returns (bool) {
         uint256 size;
 
