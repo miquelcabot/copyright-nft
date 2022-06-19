@@ -447,6 +447,12 @@ describe('CopyrightNFT', () => {
       // after minting, we have a balance of 1
       expect(await copyrightNFT.balanceOf(user1.address)).to.be.equal(1);
       expect(await copyrightNFT.ownerOf(1)).to.be.equal(user1.address);
+      // check metadata
+      const metadata = await copyrightNFT.getMetadata(1);
+      expect(metadata.songName).to.be.equal(METADATA.songName);
+      expect(metadata.artist).to.be.equal(METADATA.artist);
+      expect(metadata.album).to.be.equal(METADATA.album);
+      expect(metadata.songURL).to.be.equal(METADATA.songURL);
     });
   });
 });
