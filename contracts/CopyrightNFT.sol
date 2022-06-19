@@ -106,7 +106,6 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
         }
     }
 
-
     function mint(address receiver, Metadata memory metadata_)
         external
         onlyMinter
@@ -120,16 +119,30 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
         _tokenCounter = _tokenCounter.add(1);
     }
 
-    function redeem(address receiver, Metadata memory metadata_, address signer, bytes calldata signature) external {
-        bytes32 dataHash = _hashTypedDataV4(keccak256(abi.encode(
-            keccak256("NFT(string songName,string artist,string album,string songURL,address account)"),
-            metadata_.songName,
-            metadata_.artist,
-            metadata_.album,
-            metadata_.songURL,
-            receiver
-        )));
-        require(SignatureChecker.isValidSignatureNow(signer, dataHash, signature), "ERC721: invalid signature for redeem");
+    function redeem(
+        address receiver,
+        Metadata memory metadata_,
+        address signer,
+        bytes calldata signature
+    ) external {
+        bytes32 dataHash = _hashTypedDataV4(
+            keccak256(
+                abi.encode(
+                    keccak256(
+                        "NFT(string songName,string artist,string album,string songURL,address account)"
+                    ),
+                    metadata_.songName,
+                    metadata_.artist,
+                    metadata_.album,
+                    metadata_.songURL,
+                    receiver
+                )
+            )
+        );
+        require(
+            SignatureChecker.isValidSignatureNow(signer, dataHash, signature),
+            "ERC721: invalid signature for redeem"
+        );
         require(_isMinter(signer), "ERC721: signer is not a minter");
 
         _safeMint(receiver, _tokenCounter);
@@ -195,7 +208,9 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
     function _deployERC20Token(uint256 tokenId) internal {
         // create ERC20 token
         ERC20Template erc20token = new ERC20Template(
-            string(abi.encodePacked(_ERC20_NAME, " ", Strings.toString(tokenId))),
+            string(
+                abi.encodePacked(_ERC20_NAME, " ", Strings.toString(tokenId))
+            ),
             string(abi.encodePacked(_ERC20_SYMBOL, Strings.toString(tokenId)))
         );
         _erc20token[tokenId] = address(erc20token);
