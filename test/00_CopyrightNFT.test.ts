@@ -367,4 +367,49 @@ describe('CopyrightNFT', () => {
       ).to.be.closeTo(1, 0.001);
     });
   });
+
+  /**
+   * Redeem
+   */
+  describe('Redeem', () => {
+    beforeEach(async () => {
+      await copyrightNFT.connect(owner).setMinter(minter.address);
+    });
+
+    it('Redeem using ERC712 signature checker', async () => {
+      // minter creates signature
+      const signature = await minter._signTypedData(
+        // Domain
+        {
+          name: NFT_NAME,
+          version: '1.0.0',
+          chainId: await minter.getChainId(),
+          verifyingContract: copyrightNFT.address
+        },
+        // Types
+        {
+          NFT: [
+            { name: 'songName', type: 'string' },
+            { name: 'artist', type: 'string' },
+            { name: 'album', type: 'string' },
+            { name: 'songURL', type: 'string' },
+            { name: 'account', type: 'address' }
+          ]
+        },
+        // Value
+        {
+          songName: METADATA.songName,
+          artist: METADATA.artist,
+          album: METADATA.album,
+          songURL: METADATA.songURL,
+          account: user1.address
+        }
+      );
+      // redeem
+      await copyrightNFT.connect(user1).redeem(user1.address, METADATA, minter.address, signature);
+      // after minting, we have a balance of 1
+      expect(await copyrightNFT.balanceOf(user1.address)).to.be.equal(1);
+      expect(await copyrightNFT.ownerOf(1)).to.be.equal(user1.address);
+    });
+  });
 });
