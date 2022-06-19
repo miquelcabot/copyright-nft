@@ -19,7 +19,7 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const NFT_NAME = 'Music NFT';
 const NFT_SYMBOL = 'MNFT';
 const BASE_URI = 'https://example.com/nft';
-const PRICE = 100;
+const PRICE = ethers.utils.parseUnits('1'); // 1 ETH
 const METADATA: Metadata = {
   songName: 'Tangled up in Blue',
   artist: 'Bob Dylan',
@@ -323,6 +323,48 @@ describe('CopyrightNFT', () => {
       expect(await copyrightNFT.getCopyrightBalance(user1.address)).to.be.equal(
         PRICE
       );
+    });
+  });
+
+  /**
+   * Collect copyright gains
+   */
+  describe('Collect copyright gains', () => {
+    beforeEach(async () => {
+      await copyrightNFT.connect(owner).setMinter(minter.address);
+      await copyrightNFT.connect(minter).mint(user1.address, METADATA);
+      await copyrightNFT.connect(user2).buySong(1, { value: PRICE });
+    });
+
+    it("Owner without copyright gains doesn't receive funds", async () => {
+      expect(await copyrightNFT.getCopyrightBalance(user2.address)).to.be.equal(
+        0
+      );
+      const balanceBefore = await user2.getBalance();
+
+      await copyrightNFT.connect(user2).collectCopyrightGains();
+
+      const balanceAfter = await user2.getBalance();
+      expect(
+        +ethers.utils.formatUnits(balanceAfter.sub(balanceBefore).toString())
+      ).to.be.closeTo(0, 0.001);
+    });
+
+    it('Owner with copyright gains does receive funds', async () => {
+      expect(await copyrightNFT.getCopyrightBalance(user1.address)).to.be.equal(
+        PRICE
+      );
+      const balanceBefore = await user1.getBalance();
+
+      await copyrightNFT.connect(user1).collectCopyrightGains();
+
+      expect(await copyrightNFT.getCopyrightBalance(user1.address)).to.be.equal(
+        0
+      );
+      const balanceAfter = await user1.getBalance();
+      expect(
+        +ethers.utils.formatUnits(balanceAfter.sub(balanceBefore).toString())
+      ).to.be.closeTo(1, 0.001);
     });
   });
 });

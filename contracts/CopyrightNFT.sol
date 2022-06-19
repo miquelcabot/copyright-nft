@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./ERC20Template.sol";
 import "./ERC721.sol";
 
@@ -14,12 +15,12 @@ import "./ERC721.sol";
 ///         profits for its use
 /// @dev    This implementation follows the EIP-721 standard
 ///         (https://eips.ethereum.org/EIPS/eip-721)
-contract CopyrightNFT is Ownable, ERC721 {
+contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721 {
     using SafeMath for uint256;
 
     string internal constant _ERC20_NAME = "Music ERC20 Token";
     string internal constant _ERC20_SYMBOL = "MSC";
-    uint256 internal constant _ERC20_PRICE = 100; // 100 wei
+    uint256 internal constant _ERC20_PRICE = 1 ether; // 1 ETH
 
     struct Metadata {
         string songName;
@@ -104,6 +105,15 @@ contract CopyrightNFT is Ownable, ERC721 {
         ERC20Template(_erc20token[tokenId]).mint(_msgSender(), 1);
         address owner = ownerOf(tokenId);
         _copyrightBalances[owner] = _copyrightBalances[owner].add(msg.value);
+    }
+
+    function collectCopyrightGains() external nonReentrant {
+        address owner = _msgSender();
+        uint256 balance = _copyrightBalances[owner];
+        if (balance > 0) {
+            _copyrightBalances[owner] = 0;
+            payable(owner).transfer(balance);
+        }
     }
 
     function redeem(bytes calldata signature) external {
