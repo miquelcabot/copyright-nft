@@ -18,8 +18,6 @@ interface Metadata {
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const NFT_NAME = 'Music NFT';
 const NFT_SYMBOL = 'MNFT';
-const ERC20_NAME = 'Music ERC20 token';
-const ERC20_SYMBOL = 'MTOKEN';
 const BASE_URI = 'https://example.com/nft';
 const METADATA: Metadata = {
   songName: 'Tangled up in Blue',
@@ -38,7 +36,6 @@ const METADATA2: Metadata = {
 
 describe('CopyrightNFT', () => {
   let copyrightNFT: Contract;
-  let erc20Template: Contract;
   let owner: SignerWithAddress;
   let minter: SignerWithAddress;
   let user1: SignerWithAddress;
@@ -46,16 +43,8 @@ describe('CopyrightNFT', () => {
 
   beforeEach(async () => {
     [owner, minter, user1, user2] = await ethers.getSigners();
-    const Erc20Template = await ethers.getContractFactory('ERC20Template');
-    erc20Template = await Erc20Template.deploy(ERC20_NAME, ERC20_SYMBOL);
-    await erc20Template.deployed();
-
     const CopyrightNFT = await ethers.getContractFactory('CopyrightNFT');
-    copyrightNFT = await CopyrightNFT.deploy(
-      NFT_NAME,
-      NFT_SYMBOL,
-      erc20Template.address
-    );
+    copyrightNFT = await CopyrightNFT.deploy(NFT_NAME, NFT_SYMBOL);
     await copyrightNFT.deployed();
   });
 

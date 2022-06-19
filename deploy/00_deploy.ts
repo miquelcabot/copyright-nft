@@ -7,15 +7,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const { deployer } = await getNamedAccounts();
 
-  const erc20template = await deploy('ERC20Template', {
-    from: deployer,
-    args: ['Music ERC20 token', 'MTOKEN'],
-    log: true
-  });
-
   await deploy('CopyrightNFT', {
     from: deployer,
-    args: ['Music NFT', 'MNFT', erc20template.address],
+    args: ['Music NFT', 'MNFT'],
     log: true
   });
 };

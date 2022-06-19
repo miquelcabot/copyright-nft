@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "./ERC20Template.sol";
 import "./ERC721.sol";
 
 /// @title  NFT that represents a copyright for a song
@@ -27,23 +28,14 @@ contract CopyrightNFT is Ownable, ERC721 {
     address internal _minter;
     // counter for token ids
     uint256 internal _tokenCounter;
-    // template for ERC20 token
-    address internal _erc20template;
     // stored metadata for each token
     mapping(uint256 => Metadata) private _metadata;
     // store ERC20 token address created for each NFT token
     mapping(uint256 => address) private _erc20token;
 
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        address erc20template_
-    ) ERC721(name_, symbol_) {
-        require(
-            erc20template_ != address(0),
-            "ERC721: you can't set ERC20 template to the zero address"
-        );
-        _erc20template = erc20template_;
+    constructor(string memory name_, string memory symbol_)
+        ERC721(name_, symbol_)
+    {
         // we start with token id 1
         _tokenCounter = 1;
     }
@@ -72,6 +64,7 @@ contract CopyrightNFT is Ownable, ERC721 {
         // underlying mint function
         _safeMint(receiver, _tokenCounter);
         _setMetadata(_tokenCounter, metadata_);
+        _deployERC20Token(_tokenCounter);
         // increment token counter
         _tokenCounter = _tokenCounter.add(1);
     }
@@ -93,10 +86,6 @@ contract CopyrightNFT is Ownable, ERC721 {
 
     function setBaseURI(string memory baseURI_) external onlyOwner {
         _setBaseURI(baseURI_);
-    }
-
-    function setERC20Template(address erc20template_) external onlyOwner {
-        _setERC20Template(erc20template_);
     }
 
     function setTokenURI(uint256 tokenId, string memory _tokenURI) public {
@@ -129,18 +118,6 @@ contract CopyrightNFT is Ownable, ERC721 {
         _minter = minter_;
     }
 
-    function _setERC20Template(address erc20template_) internal {
-        require(
-            erc20template_ != address(0),
-            "ERC721: you can't set ERC20 template to the zero address"
-        );
-        require(
-            erc20template_ != _erc20template,
-            "ERC721: you can't set ERC20 template to the same address"
-        );
-        _erc20template = erc20template_;
-    }
-
     function _setMetadata(uint256 tokenId, Metadata memory metadata_) internal {
         require(
             _exists(tokenId),
@@ -152,6 +129,15 @@ contract CopyrightNFT is Ownable, ERC721 {
 
     function _isMinter(address _minterAddress) internal view returns (bool) {
         return _minterAddress == _minter;
+    }
+
+    function _deployERC20Token(uint256 tokenId) internal {
+        // create ERC20 token
+        ERC20Template erc20token = new ERC20Template(
+            string(abi.encodePacked("Music ERC20 Token ", tokenId)),
+            string(abi.encodePacked("MSC", tokenId))
+        );
+        _erc20token[tokenId] = address(erc20token);
     }
 
     /* === MODIFIERS === */

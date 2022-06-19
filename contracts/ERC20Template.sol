@@ -12,7 +12,7 @@ contract ERC20Template is ERC20, Ownable {
         ERC20(name_, symbol_)
     {}
 
-    function mint(address to, uint256 value) public onlyOwner {
+    function mint(address to, uint256 value) external onlyOwner {
         _mint(to, value);
     }
 }
