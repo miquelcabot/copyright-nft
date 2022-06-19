@@ -8,6 +8,10 @@ import "./utils/AddressUtils.sol";
 import "./interfaces/IERC721Metadata.sol";
 import "./interfaces/IERC721TokenReceiver.sol";
 
+/// @title  ERC-721 Non-Fungible Token, with optional metadata extension
+/// @author Miquel A. Cabot
+/// @dev    This implementation follows the EIP-721 standard
+///         (https://eips.ethereum.org/EIPS/eip-721)
 contract ERC721 is Context, IERC721Metadata {
     using SafeMath for uint256;
     using AddressUtils for address;
