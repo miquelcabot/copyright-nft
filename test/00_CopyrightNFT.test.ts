@@ -47,7 +47,7 @@ describe('CopyrightNFT', () => {
   beforeEach(async () => {
     [owner, minter, user1, user2] = await ethers.getSigners();
     const Erc20Template = await ethers.getContractFactory('ERC20Template');
-    erc20Template = await Erc20Template.deploy(NFT_NAME, NFT_SYMBOL);
+    erc20Template = await Erc20Template.deploy(ERC20_NAME, ERC20_SYMBOL);
     await erc20Template.deployed();
 
     const CopyrightNFT = await ethers.getContractFactory('CopyrightNFT');
