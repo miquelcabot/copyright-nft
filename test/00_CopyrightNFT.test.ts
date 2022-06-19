@@ -19,6 +19,7 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const NFT_NAME = 'Music NFT';
 const NFT_SYMBOL = 'MNFT';
 const BASE_URI = 'https://example.com/nft';
+const PRICE = 100;
 const METADATA: Metadata = {
   songName: 'Tangled up in Blue',
   artist: 'Bob Dylan',
@@ -291,6 +292,37 @@ describe('CopyrightNFT', () => {
       expect(metadata.artist).to.be.equal(METADATA2.artist);
       expect(metadata.album).to.be.equal(METADATA2.album);
       expect(metadata.songURL).to.be.equal(METADATA2.songURL);
+    });
+  });
+
+  /**
+   * Buy a song
+   */
+  describe('Buy a song', () => {
+    beforeEach(async () => {
+      await copyrightNFT.connect(owner).setMinter(minter.address);
+      await copyrightNFT.connect(minter).mint(user1.address, METADATA);
+    });
+
+    it("Buyer haven't sent the minimum price to buy the song", async () => {
+      await expect(copyrightNFT.connect(user2).buySong(1)).to.be.reverted;
+      await expect(copyrightNFT.connect(user2).buySong(1, { value: 50 })).to.be
+        .reverted;
+    });
+
+    it('Buyer can buy a song', async () => {
+      const erc20tokenAddress = await copyrightNFT.getErc20Token(1);
+      const ERC20Token = await ethers.getContractFactory('ERC20Template');
+      const erc20token = await ERC20Token.attach(erc20tokenAddress);
+
+      expect(await erc20token.balanceOf(user2.address)).to.be.equal(0);
+
+      await copyrightNFT.connect(user2).buySong(1, { value: PRICE });
+
+      expect(await erc20token.balanceOf(user2.address)).to.be.equal(1);
+      expect(await copyrightNFT.getCopyrightBalance(user1.address)).to.be.equal(
+        PRICE
+      );
     });
   });
 });

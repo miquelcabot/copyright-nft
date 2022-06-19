@@ -17,8 +17,9 @@ import "./ERC721.sol";
 contract CopyrightNFT is Ownable, ERC721 {
     using SafeMath for uint256;
 
-    string internal constant _ERC20_NAME = "Music ERC20 Token"; 
-    string internal constant _ERC20_SYMBOL = "MSC"; 
+    string internal constant _ERC20_NAME = "Music ERC20 Token";
+    string internal constant _ERC20_SYMBOL = "MSC";
+    uint256 internal constant _ERC20_PRICE = 100; // 100 wei
 
     struct Metadata {
         string songName;
@@ -35,6 +36,8 @@ contract CopyrightNFT is Ownable, ERC721 {
     mapping(uint256 => Metadata) private _metadata;
     // store ERC20 token address created for each NFT token
     mapping(uint256 => address) private _erc20token;
+    // store balance of copyright NFT token for each user (bought songs)
+    mapping(address => uint256) private _copyrightBalances;
 
     constructor(string memory name_, string memory symbol_)
         ERC721(name_, symbol_)
@@ -59,6 +62,26 @@ contract CopyrightNFT is Ownable, ERC721 {
         return _metadata[tokenId];
     }
 
+    function getErc20Token(uint256 tokenId) external view returns (address) {
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: you can't query the metadata for nonexistent token"
+        );
+        return _erc20token[tokenId];
+    }
+
+    function getCopyrightBalance(address owner)
+        external
+        view
+        returns (uint256)
+    {
+        require(
+            owner != address(0),
+            "ERC721: you can't query the copyright balance of the zero address"
+        );
+        return _copyrightBalances[owner];
+    }
+
     function mint(address receiver, Metadata memory metadata_)
         external
         onlyMinter
@@ -70,6 +93,17 @@ contract CopyrightNFT is Ownable, ERC721 {
         _deployERC20Token(_tokenCounter);
         // increment token counter
         _tokenCounter = _tokenCounter.add(1);
+    }
+
+    function buySong(uint256 tokenId) external payable {
+        require(_exists(tokenId), "ERC721: you can't buy nonexistent token");
+        require(
+            msg.value >= _ERC20_PRICE,
+            "ERC721: you haven't sent the minimum price to buy the song"
+        );
+        ERC20Template(_erc20token[tokenId]).mint(_msgSender(), 1);
+        address owner = ownerOf(tokenId);
+        _copyrightBalances[owner] = _copyrightBalances[owner].add(msg.value);
     }
 
     function redeem(bytes calldata signature) external {
