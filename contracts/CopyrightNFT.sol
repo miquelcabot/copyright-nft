@@ -16,10 +16,19 @@ import "./ERC721.sol";
 contract CopyrightNFT is Ownable, ERC721 {
     using SafeMath for uint256;
 
+    struct Metadata {
+        string songName;
+        string artist;
+        string album;
+        string songURL;
+    }
+
     // address of minter user
     address internal _minter;
     // counter for token ids
     uint256 internal _tokenCounter;
+    // stored metadata for each token
+    mapping(uint256 => Metadata) private _metadata;
 
     constructor(string memory name_, string memory symbol_)
         ERC721(name_, symbol_)
@@ -30,6 +39,14 @@ contract CopyrightNFT is Ownable, ERC721 {
 
     function minter() external view returns (address) {
         return _minter;
+    }
+
+    function getMetadata(uint256 tokenId)
+        external
+        view
+        returns (Metadata memory)
+    {
+        return _metadata[tokenId];
     }
 
     function mint(address receiver) external onlyMinter {
@@ -67,6 +84,14 @@ contract CopyrightNFT is Ownable, ERC721 {
         _setTokenURI(tokenId, _tokenURI);
     }
 
+    function setMetadata(uint256 tokenId, Metadata memory metadata_) public {
+        require(
+            _isApprovedOrOwner(_msgSender(), tokenId),
+            "ERC721: you can't set metadata from a caller that is not owner nor approved"
+        );
+        _setMetadata(tokenId, metadata_);
+    }
+
     /* === INTERNAL FUNCTIONS === */
 
     function _setMinter(address minter_) internal {
@@ -79,6 +104,14 @@ contract CopyrightNFT is Ownable, ERC721 {
             "ERC721: you can't set minter to the same address"
         );
         _minter = minter_;
+    }
+
+    function _setMetadata(uint256 tokenId, Metadata memory metadata_) internal {
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: you can't set the metadata for nonexistent token"
+        );
+        _metadata[tokenId] = metadata_;
     }
 
     function _isMinter(address _minterAddress) internal view returns (bool) {
