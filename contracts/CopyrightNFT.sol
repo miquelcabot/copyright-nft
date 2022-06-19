@@ -5,10 +5,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import "./ERC20Template.sol";
 import "./ERC721.sol";
+
+import "hardhat/console.sol";
 
 /// @title  NFT that represents a copyright for a song
 /// @author Miquel A. Cabot
@@ -122,7 +123,6 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
     function redeem(
         address receiver,
         Metadata memory metadata_,
-        address signer,
         bytes calldata signature
     ) external {
         bytes32 dataHash = _hashTypedDataV4(
@@ -139,11 +139,9 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
                 )
             )
         );
-        require(
-            SignatureChecker.isValidSignatureNow(signer, dataHash, signature),
-            "ERC721: invalid signature for redeem"
-        );
-        require(_isMinter(signer), "ERC721: signer is not a minter");
+        address signer = ECDSA.recover(dataHash, signature);
+        console.log(signer);
+        require(_isMinter(signer), "ERC721: invalid signature for redeem");
 
         _safeMint(receiver, _tokenCounter);
         _setMetadata(_tokenCounter, metadata_);
