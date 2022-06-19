@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.0;
 
 /// @title ERC-165 Standard Interface Detection
 /// @dev See https://eips.ethereum.org/EIPS/eip-165)
