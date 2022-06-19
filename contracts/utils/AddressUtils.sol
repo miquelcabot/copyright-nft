@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/// @title Smart contract with address utility functions
+/// @author Miquel A. Cabot
+/// @dev Collection of functions related to the address type
 library AddressUtils {
     /**
      * @dev Returns whether the target address is a contract.
