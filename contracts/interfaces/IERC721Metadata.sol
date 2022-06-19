@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "./IERC721.sol";
 
 /// @title ERC-721 Non-Fungible Token Standard, optional metadata extension
+/// @author Miquel A. Cabot
 /// @dev See https://eips.ethereum.org/EIPS/eip-721
 ///  Note: the ERC-165 identifier for this interface is 0x5b5e139f.
 interface IERC721Metadata is IERC721 {

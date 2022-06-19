@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 /// @title Auxiliar smart contract to add onERC721Received() function to ERC-721 contract
+/// @author Miquel A. Cabot
 /// @dev See https://eips.ethereum.org/EIPS/eip-721
 ///  Note: the ERC-165 identifier for this interface is 0x150b7a02.
 interface IERC721TokenReceiver {
