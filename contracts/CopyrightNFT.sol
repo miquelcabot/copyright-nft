@@ -43,7 +43,7 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
     // store balance of copyright NFT token for each user (bought songs)
     mapping(address => uint256) private _copyrightBalances;
 
-    /// @notice Creates a new ERC-721 token
+    /// @dev Creates a new ERC-721 token
     /// @param name_ Name of the NFT
     /// @param symbol_ Symbol of the NFT
     constructor(string memory name_, string memory symbol_)
@@ -54,13 +54,13 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
         _tokenCounter = 1;
     }
 
-    /// @notice Returns the address of the minter user
+    /// @dev Returns the address of the minter user
     /// @return address Address of the minter user
     function minter() external view returns (address) {
         return _minter;
     }
 
-    /// @notice Returns information about the token
+    /// @dev Returns information about the token
     /// @param tokenId Id of the token
     /// @return uint256 Metadata information about the token
     function getMetadata(uint256 tokenId)
@@ -75,7 +75,7 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
         return _metadata[tokenId];
     }
 
-    /// @notice Returns the address of the ERC20 token created for the NFT token
+    /// @dev Returns the address of the ERC20 token created for the NFT token
     /// @param tokenId Id of the token
     /// @return address Address of the ERC20 token
     function getErc20Token(uint256 tokenId) external view returns (address) {
@@ -86,7 +86,7 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
         return _erc20token[tokenId];
     }
 
-    /// @notice Returns the balance of gains for the copyright of the user
+    /// @dev Returns the balance of gains for the copyright of the user
     /// @param owner Address of the user
     /// @return uint256 Balance of gains for the copyright of the user
     function getCopyrightBalance(address owner)
@@ -101,7 +101,7 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
         return _copyrightBalances[owner];
     }
 
-    /// @notice Buy a song, create a new ERC-20 token and sending it to the user
+    /// @dev Buy a song, create a new ERC-20 token and sending it to the user
     ///      who bought the song. It also stores the gain for the copyright of the
     ///      song in the owner's balance
     /// @param tokenId Id of the token
@@ -118,7 +118,7 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
         _copyrightBalances[owner] = _copyrightBalances[owner].add(msg.value);
     }
 
-    /// @notice Transfers the gains for the copyright of the song to the owner
+    /// @dev Transfers the gains for the copyright of the song to the owner
     function collectCopyrightGains() external nonReentrant {
         address owner = _msgSender();
         uint256 balance = _copyrightBalances[owner];
@@ -129,7 +129,7 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
         }
     }
 
-    /// @notice Mint a new NFT token to the receiver
+    /// @dev Mint a new NFT token to the receiver
     /// @param receiver Address of the user
     /// @param metadata_ Metadata of the song
     function mint(address receiver, Metadata memory metadata_)
@@ -147,7 +147,7 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
         _tokenCounter = _tokenCounter.add(1);
     }
 
-    /// @notice Redeem a new NFT token to the receiver usign the ERC712 standard
+    /// @dev Redeem a new NFT token to the receiver usign the ERC712 standard
     /// @param receiver Address of the user
     /// @param metadata_ Metadata of the song
     /// @param signature Signature of the message, signed by a minter user
@@ -187,19 +187,19 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
 
     /* === CONTROL FUNCTIONS === */
 
-    /// @notice Change the minter user to a new account
+    /// @dev Change the minter user to a new account
     /// @param minter_ Address of the user who will have minter role
     function setMinter(address minter_) external onlyOwner {
         _setMinter(minter_);
     }
 
-    /// @notice Sets a new base URI for the NFT tokens
+    /// @dev Sets a new base URI for the NFT tokens
     /// @param baseURI_ New base URI of the NFT tokens
     function setBaseURI(string memory baseURI_) external onlyOwner {
         _setBaseURI(baseURI_);
     }
 
-    /// @notice Sets a new token URI for the NFT token
+    /// @dev Sets a new token URI for the NFT token
     /// @param tokenId Id of the token
     /// @param _tokenURI New token URI of the NFT token
     function setTokenURI(uint256 tokenId, string memory _tokenURI) public {
@@ -210,7 +210,7 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
         _setTokenURI(tokenId, _tokenURI);
     }
 
-    /// @notice Sets metadata for the NFT token
+    /// @dev Sets metadata for the NFT token
     /// @param tokenId Id of the token
     /// @param metadata_ New metadata information of the NFT token
     function setMetadata(uint256 tokenId, Metadata memory metadata_) public {
@@ -223,7 +223,7 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
 
     /* === INTERNAL FUNCTIONS === */
 
-    /// @notice Internal function to change the minter user to a new account
+    /// @dev Internal function to change the minter user to a new account
     /// @param minter_ Address of the user who will have minter role
     function _setMinter(address minter_) internal {
         require(
@@ -237,7 +237,7 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
         _minter = minter_;
     }
 
-    /// @notice Internal function to set metadata for the NFT token
+    /// @dev Internal function to set metadata for the NFT token
     /// @param tokenId Id of the token
     /// @param metadata_ New metadata information of the NFT token
     function _setMetadata(uint256 tokenId, Metadata memory metadata_) internal {
@@ -249,14 +249,14 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
         emit MetadataChanged(tokenId, metadata_);
     }
 
-    /// @notice Checks if the user has the minter role
+    /// @dev Checks if the user has the minter role
     /// @param _minterAddress Address of the user to check
     /// @return bool True if the user has the minter role
     function _isMinter(address _minterAddress) internal view returns (bool) {
         return _minterAddress == _minter;
     }
 
-    /// @notice Deploy a new ERC20 token for the NFT token
+    /// @dev Deploy a new ERC20 token for the NFT token
     /// @param tokenId Id of the token
     function _deployERC20Token(uint256 tokenId) internal {
         // create ERC20 token
@@ -271,7 +271,7 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
 
     /* === MODIFIERS === */
 
-    /// @notice Modifier to check if the user has the minter role
+    /// @dev Modifier to check if the user has the minter role
     modifier onlyMinter() {
         require(_msgSender() == _minter);
         _;
@@ -279,6 +279,6 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
 
     /* === EVENTS === */
 
-    /// @notice Event emitted when the metadata of the NFT token is changed
+    /// @dev Event emitted when the metadata of the NFT token is changed
     event MetadataChanged(uint256 indexed _tokenId, Metadata indexed _metadata);
 }
