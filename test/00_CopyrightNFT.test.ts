@@ -378,7 +378,6 @@ describe('CopyrightNFT', () => {
 
     it('Redeem using ERC712 signature checker', async () => {
       // minter creates signature
-      console.log(minter.address);
       const signature = await minter._signTypedData(
         // Domain
         {
@@ -407,7 +406,9 @@ describe('CopyrightNFT', () => {
         }
       );
       // redeem
-      await copyrightNFT.connect(user1).redeem(user1.address, METADATA, signature);
+      await copyrightNFT
+        .connect(user1)
+        .redeem(user1.address, METADATA, signature);
       // after minting, we have a balance of 1
       expect(await copyrightNFT.balanceOf(user1.address)).to.be.equal(1);
       expect(await copyrightNFT.ownerOf(1)).to.be.equal(user1.address);

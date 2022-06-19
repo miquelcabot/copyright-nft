@@ -129,10 +129,10 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
                     keccak256(
                         "NFT(string songName,string artist,string album,string songURL,address account)"
                     ),
-                    metadata_.songName,
-                    metadata_.artist,
-                    metadata_.album,
-                    metadata_.songURL,
+                    keccak256(abi.encodePacked(metadata_.songName)),
+                    keccak256(abi.encodePacked(metadata_.artist)),
+                    keccak256(abi.encodePacked(metadata_.album)),
+                    keccak256(abi.encodePacked(metadata_.songURL)),
                     receiver
                 )
             )
