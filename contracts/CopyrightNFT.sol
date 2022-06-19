@@ -34,9 +34,11 @@ contract CopyrightNFT is Ownable, ERC721 {
     // store ERC20 token address created for each NFT token
     mapping(uint256 => address) private _erc20token;
 
-    constructor(string memory name_, string memory symbol_, address erc20template_)
-        ERC721(name_, symbol_)
-    {
+    constructor(
+        string memory name_,
+        string memory symbol_,
+        address erc20template_
+    ) ERC721(name_, symbol_) {
         require(
             erc20template_ != address(0),
             "ERC721: you can't set ERC20 template to the zero address"
