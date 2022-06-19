@@ -46,6 +46,10 @@ contract CopyrightNFT is Ownable, ERC721 {
         view
         returns (Metadata memory)
     {
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: you can't query the metadata for nonexistent token"
+        );
         return _metadata[tokenId];
     }
 
