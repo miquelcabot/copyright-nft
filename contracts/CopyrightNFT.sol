@@ -9,8 +9,6 @@ import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import "./ERC20Template.sol";
 import "./ERC721.sol";
 
-import "hardhat/console.sol";
-
 /// @title  NFT that represents a copyright for a song
 /// @author Miquel A. Cabot
 /// @notice With this NFT you can demostrate the ownership of a song, and you will
@@ -140,7 +138,6 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
             )
         );
         address signer = ECDSA.recover(dataHash, signature);
-        console.log(signer);
         require(_isMinter(signer), "ERC721: invalid signature for redeem");
 
         _safeMint(receiver, _tokenCounter);
