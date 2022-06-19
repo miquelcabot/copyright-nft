@@ -26,6 +26,13 @@ const METADATA: Metadata = {
   songURL:
     'https://open.spotify.com/track/6Vcwr9tb3ZLO63F8DL8cqu?si=d779b9bcaff64406'
 };
+const METADATA2: Metadata = {
+  songName: 'Hey You',
+  artist: 'Pink Floyd',
+  album: 'The Wall',
+  songURL:
+    'https://open.spotify.com/track/7F02x6EKYIQV3VcTaTm7oN?si=ee5483d7b1fe42bf'
+};
 
 describe('CopyrightNFT', () => {
   let copyrightNFT: Contract;
@@ -105,7 +112,7 @@ describe('CopyrightNFT', () => {
     });
 
     it("Non minter can't mint", async () => {
-      await expect(copyrightNFT.connect(user1).mint(user1.address)).to.be
+      await expect(copyrightNFT.connect(user1).mint(user1.address, METADATA)).to.be
         .reverted;
     });
 
@@ -113,7 +120,7 @@ describe('CopyrightNFT', () => {
       // before minting, we have a balance of 0
       expect(await copyrightNFT.balanceOf(user1.address)).to.be.equal(0);
       // mint
-      await copyrightNFT.connect(minter).mint(user1.address);
+      await copyrightNFT.connect(minter).mint(user1.address, METADATA);
       // after minting, we have a balance of 1
       expect(await copyrightNFT.balanceOf(user1.address)).to.be.equal(1);
       expect(await copyrightNFT.ownerOf(1)).to.be.equal(user1.address);
@@ -150,7 +157,7 @@ describe('CopyrightNFT', () => {
   describe('Approve', () => {
     beforeEach(async () => {
       await copyrightNFT.connect(owner).setMinter(minter.address);
-      await copyrightNFT.connect(minter).mint(user1.address);
+      await copyrightNFT.connect(minter).mint(user1.address, METADATA);
     });
 
     it("You can't approve the owner", async () => {
@@ -179,7 +186,7 @@ describe('CopyrightNFT', () => {
   describe('Transfer', () => {
     beforeEach(async () => {
       await copyrightNFT.connect(owner).setMinter(minter.address);
-      await copyrightNFT.connect(minter).mint(user1.address);
+      await copyrightNFT.connect(minter).mint(user1.address, METADATA);
     });
 
     it("You can't transfer if you aren't the owner nor approved", async () => {
@@ -234,7 +241,7 @@ describe('CopyrightNFT', () => {
   describe('BaseURI and TokenURI', () => {
     beforeEach(async () => {
       await copyrightNFT.connect(owner).setMinter(minter.address);
-      await copyrightNFT.connect(minter).mint(user1.address);
+      await copyrightNFT.connect(minter).mint(user1.address, METADATA);
     });
 
     it("Non owner can't set BaseURI", async () => {
@@ -264,7 +271,7 @@ describe('CopyrightNFT', () => {
   describe('Metadata', () => {
     beforeEach(async () => {
       await copyrightNFT.connect(owner).setMinter(minter.address);
-      await copyrightNFT.connect(minter).mint(user1.address);
+      await copyrightNFT.connect(minter).mint(user1.address, METADATA);
     });
 
     it("Non owner of NFT can't set metadata", async () => {
@@ -274,16 +281,16 @@ describe('CopyrightNFT', () => {
 
     it('Owner of NFT can set metadata', async () => {
       let metadata = await copyrightNFT.getMetadata(1);
-      expect(metadata.songName).to.be.empty;
-      expect(metadata.artist).to.be.empty;
-      expect(metadata.album).to.be.empty;
-      expect(metadata.songURL).to.be.empty;
-      await copyrightNFT.connect(user1).setMetadata(1, METADATA);
-      metadata = await copyrightNFT.getMetadata(1);
       expect(metadata.songName).to.be.equal(METADATA.songName);
       expect(metadata.artist).to.be.equal(METADATA.artist);
       expect(metadata.album).to.be.equal(METADATA.album);
       expect(metadata.songURL).to.be.equal(METADATA.songURL);
+      await copyrightNFT.connect(user1).setMetadata(1, METADATA2);
+      metadata = await copyrightNFT.getMetadata(1);
+      expect(metadata.songName).to.be.equal(METADATA2.songName);
+      expect(metadata.artist).to.be.equal(METADATA2.artist);
+      expect(metadata.album).to.be.equal(METADATA2.album);
+      expect(metadata.songURL).to.be.equal(METADATA2.songURL);
     });
   });
 });

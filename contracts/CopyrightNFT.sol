@@ -49,10 +49,11 @@ contract CopyrightNFT is Ownable, ERC721 {
         return _metadata[tokenId];
     }
 
-    function mint(address receiver) external onlyMinter {
+    function mint(address receiver, Metadata memory metadata_) external onlyMinter {
         // no need to check receiver, will be taken care of by
         // underlying mint function
         _safeMint(receiver, _tokenCounter);
+        _setMetadata(_tokenCounter, metadata_);
         // increment token counter
         _tokenCounter = _tokenCounter.add(1);
     }
