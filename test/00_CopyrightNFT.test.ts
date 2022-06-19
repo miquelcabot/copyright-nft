@@ -51,7 +51,11 @@ describe('CopyrightNFT', () => {
     await erc20Template.deployed();
 
     const CopyrightNFT = await ethers.getContractFactory('CopyrightNFT');
-    copyrightNFT = await CopyrightNFT.deploy(NFT_NAME, NFT_SYMBOL, erc20Template.address);
+    copyrightNFT = await CopyrightNFT.deploy(
+      NFT_NAME,
+      NFT_SYMBOL,
+      erc20Template.address
+    );
     await copyrightNFT.deployed();
   });
 
