@@ -17,6 +17,9 @@ import "./ERC721.sol";
 contract CopyrightNFT is Ownable, ERC721 {
     using SafeMath for uint256;
 
+    string internal constant _ERC20_NAME = "Music ERC20 Token"; 
+    string internal constant _ERC20_SYMBOL = "MSC"; 
+
     struct Metadata {
         string songName;
         string artist;
@@ -134,8 +137,8 @@ contract CopyrightNFT is Ownable, ERC721 {
     function _deployERC20Token(uint256 tokenId) internal {
         // create ERC20 token
         ERC20Template erc20token = new ERC20Template(
-            string(abi.encodePacked("Music ERC20 Token ", tokenId)),
-            string(abi.encodePacked("MSC", tokenId))
+            string(abi.encodePacked(_ERC20_NAME, " ", tokenId)),
+            string(abi.encodePacked(_ERC20_SYMBOL, tokenId))
         );
         _erc20token[tokenId] = address(erc20token);
     }
