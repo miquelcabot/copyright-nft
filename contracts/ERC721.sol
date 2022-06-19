@@ -7,9 +7,8 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "./utils/AddressUtils.sol";
 import "./interfaces/IERC721Metadata.sol";
 import "./interfaces/IERC721TokenReceiver.sol";
-import "./ERC165.sol";
 
-contract ERC721 is Context, ERC165, IERC721Metadata {
+contract ERC721 is Context, IERC721Metadata {
     using SafeMath for uint256;
     using AddressUtils for address;
 
@@ -30,10 +29,6 @@ contract ERC721 is Context, ERC165, IERC721Metadata {
     constructor(string memory name_, string memory symbol_) {
         _name = name_;
         _symbol = symbol_;
-
-        // register the supported interfaces to conform to ERC721 via ERC165
-        _registerInterface(_INTERFACE_ID_ERC721);
-        _registerInterface(_INTERFACE_ID_ERC721_METADATA);
     }
 
     function name() external view override returns (string memory) {
