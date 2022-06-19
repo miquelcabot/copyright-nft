@@ -27,12 +27,21 @@ contract CopyrightNFT is Ownable, ERC721 {
     address internal _minter;
     // counter for token ids
     uint256 internal _tokenCounter;
+    // template for ERC20 token
+    address internal _erc20template;
     // stored metadata for each token
     mapping(uint256 => Metadata) private _metadata;
+    // store ERC20 token address created for each NFT token
+    mapping(uint256 => address) private _erc20token;
 
-    constructor(string memory name_, string memory symbol_)
+    constructor(string memory name_, string memory symbol_, address erc20template_)
         ERC721(name_, symbol_)
     {
+        require(
+            erc20template_ != address(0),
+            "ERC721: you can't set ERC20 template to the zero address"
+        );
+        _erc20template = erc20template_;
         // we start with token id 1
         _tokenCounter = 1;
     }
@@ -84,6 +93,10 @@ contract CopyrightNFT is Ownable, ERC721 {
         _setBaseURI(baseURI_);
     }
 
+    function setERC20Template(address erc20template_) external onlyOwner {
+        _setERC20Template(erc20template_);
+    }
+
     function setTokenURI(uint256 tokenId, string memory _tokenURI) public {
         require(
             _isApprovedOrOwner(_msgSender(), tokenId),
@@ -112,6 +125,18 @@ contract CopyrightNFT is Ownable, ERC721 {
             "ERC721: you can't set minter to the same address"
         );
         _minter = minter_;
+    }
+
+    function _setERC20Template(address erc20template_) internal {
+        require(
+            erc20template_ != address(0),
+            "ERC721: you can't set ERC20 template to the zero address"
+        );
+        require(
+            erc20template_ != _erc20template,
+            "ERC721: you can't set ERC20 template to the same address"
+        );
+        _erc20template = erc20template_;
     }
 
     function _setMetadata(uint256 tokenId, Metadata memory metadata_) internal {
