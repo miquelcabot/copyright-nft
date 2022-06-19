@@ -112,8 +112,8 @@ describe('CopyrightNFT', () => {
     });
 
     it("Non minter can't mint", async () => {
-      await expect(copyrightNFT.connect(user1).mint(user1.address, METADATA)).to.be
-        .reverted;
+      await expect(copyrightNFT.connect(user1).mint(user1.address, METADATA)).to
+        .be.reverted;
     });
 
     it('Minter can mint', async () => {
