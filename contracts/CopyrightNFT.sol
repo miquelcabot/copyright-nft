@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.12;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
@@ -181,8 +181,8 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721 {
     function _deployERC20Token(uint256 tokenId) internal {
         // create ERC20 token
         ERC20Template erc20token = new ERC20Template(
-            string(abi.encodePacked(_ERC20_NAME, " ", tokenId)),
-            string(abi.encodePacked(_ERC20_SYMBOL, tokenId))
+            string.concat(_ERC20_NAME, " ", Strings.toString(tokenId)),
+            string.concat(_ERC20_SYMBOL, Strings.toString(tokenId))
         );
         _erc20token[tokenId] = address(erc20token);
     }
