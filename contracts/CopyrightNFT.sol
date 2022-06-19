@@ -120,6 +120,7 @@ contract CopyrightNFT is Ownable, ERC721 {
             "ERC721Metadata: you can't set the metadata for nonexistent token"
         );
         _metadata[tokenId] = metadata_;
+        emit MetadataChanged(tokenId, metadata_);
     }
 
     function _isMinter(address _minterAddress) internal view returns (bool) {
@@ -132,4 +133,8 @@ contract CopyrightNFT is Ownable, ERC721 {
         require(_msgSender() == _minter);
         _;
     }
+
+    /* === EVENTS === */
+
+    event MetadataChanged(uint256 indexed _tokenId, Metadata indexed _metadata);
 }
