@@ -13,10 +13,16 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 contract ERC20Template is ERC20, Ownable {
     using SafeMath for uint256;
 
+    /// @notice Creates a new ERC-20 token
+    /// @param name_ Name of the token
+    /// @param symbol_ Symbol of the token
     constructor(string memory name_, string memory symbol_)
         ERC20(name_, symbol_)
     {}
 
+    /// @notice Mints a new token
+    /// @param to Address to mint the token to
+    /// @param value Amount of tokens to mint
     function mint(address to, uint256 value) external onlyOwner {
         _mint(to, value);
     }
