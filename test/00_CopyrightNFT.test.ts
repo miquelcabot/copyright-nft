@@ -8,10 +8,24 @@ import { Contract } from 'ethers';
 chai.use(waffle.solidity);
 const { expect } = chai;
 
+interface Metadata {
+  songName: string;
+  artist: string;
+  album: string;
+  songURL: string;
+}
+
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const NFT_NAME = 'Music NFT';
 const NFT_SYMBOL = 'MNFT';
 const BASE_URI = 'https://example.com/nft';
+const METADATA: Metadata = {
+  songName: 'Tangled up in Blue',
+  artist: 'Bob Dylan',
+  album: 'Blood On The Tracks',
+  songURL:
+    'https://open.spotify.com/track/6Vcwr9tb3ZLO63F8DL8cqu?si=d779b9bcaff64406'
+};
 
 describe('CopyrightNFT', () => {
   let copyrightNFT: Contract;
@@ -217,14 +231,15 @@ describe('CopyrightNFT', () => {
   /**
    * BaseURI and TokenURI
    */
-   describe('BaseURI and TokenURI', () => {
+  describe('BaseURI and TokenURI', () => {
     beforeEach(async () => {
       await copyrightNFT.connect(owner).setMinter(minter.address);
       await copyrightNFT.connect(minter).mint(user1.address);
     });
 
     it("Non owner can't set BaseURI", async () => {
-      await expect(copyrightNFT.connect(user1).setBaseURI(BASE_URI)).to.be.reverted;
+      await expect(copyrightNFT.connect(user1).setBaseURI(BASE_URI)).to.be
+        .reverted;
     });
 
     it('Owner can set BaseURI', async () => {
@@ -233,12 +248,42 @@ describe('CopyrightNFT', () => {
     });
 
     it("Non owner of NFT can't set TokenURI", async () => {
-      await expect(copyrightNFT.connect(user2).setTokenURI(BASE_URI)).to.be.reverted;
+      await expect(copyrightNFT.connect(user2).setTokenURI(BASE_URI)).to.be
+        .reverted;
     });
 
     it('Owner of NFT can set TokenURI', async () => {
       await copyrightNFT.connect(user1).setTokenURI(1, BASE_URI);
       expect(await copyrightNFT.tokenURI(1)).to.be.equal(BASE_URI);
+    });
+  });
+
+  /**
+   * Metadata
+   */
+  describe('Metadata', () => {
+    beforeEach(async () => {
+      await copyrightNFT.connect(owner).setMinter(minter.address);
+      await copyrightNFT.connect(minter).mint(user1.address);
+    });
+
+    it("Non owner of NFT can't set metadata", async () => {
+      await expect(copyrightNFT.connect(user2).setMetadata(1, METADATA)).to.be
+        .reverted;
+    });
+
+    it('Owner of NFT can set metadata', async () => {
+      let metadata = await copyrightNFT.getMetadata(1);
+      expect(metadata.songName).to.be.empty;
+      expect(metadata.artist).to.be.empty;
+      expect(metadata.album).to.be.empty;
+      expect(metadata.songURL).to.be.empty;
+      await copyrightNFT.connect(user1).setMetadata(1, METADATA);
+      metadata = await copyrightNFT.getMetadata(1);
+      expect(metadata.songName).to.be.equal(METADATA.songName);
+      expect(metadata.artist).to.be.equal(METADATA.artist);
+      expect(metadata.album).to.be.equal(METADATA.album);
+      expect(metadata.songURL).to.be.equal(METADATA.songURL);
     });
   });
 });
