@@ -13,6 +13,7 @@ Main properties of this ERC-721 token:
 - When a new NFT is minted, it will store the metadata of the song (name, album, artist, song URL), and a new ERC-20 token will be created. This ERC-20 token can be used later to consume the song (THIS PART OF THE PROCESS IS NOT PART OF THE CURRENT PROJECT).
 - The final users can buy an ERC-20 token to consume the song calling the `buy()` function. With this fuction, we need to send 1 MATIC to buy the ERC-20 token. This MATIC token will be added to the copyright users (owners of the NFTs) balance.
 - The copyright users (owners of the NFTs) will be able to collect their copyright gains calling the `collectCopyrightGains()`. This function transfers the gains for the copyright of the song to the owner of the NFT.
+- This repository also uses CI/CD pipelines to check the code quality and to run the tests. This is set up with [GitHub Actions](https://github.com/miquelcabot/copyright-nft/actions)
 
 ## 📝 Lazy minting
 The process of minting NFTs is expensive. With this, if all the minting is done by the minter user, he will need to pay a lot of fees. These costs are too high for many use-cases, particularly if a system administrator is considering minting hundreds or thousands of NFTs.
