@@ -136,15 +136,7 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
         external
         onlyMinter
     {
-        // no need to check receiver, will be taken care of by
-        // underlying mint function
-        _safeMint(receiver, _tokenCounter);
-        // store the metadata
-        _setMetadata(_tokenCounter, metadata_);
-        // deploy a new ERC20 token for the NFT token
-        _deployERC20Token(_tokenCounter);
-        // increment token counter
-        _tokenCounter = _tokenCounter.add(1);
+      _mintAndSetMetadataAndDeployERC20(receiver, metadata_);
     }
 
     /// @dev Redeem a new NFT token to the receiver usign the ERC712 standard
@@ -174,15 +166,7 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
         address signer = ECDSA.recover(dataHash, signature);
         require(_isMinter(signer), "ERC721: invalid signature for redeem");
 
-        // no need to check receiver, will be taken care of by
-        // underlying mint function
-        _safeMint(receiver, _tokenCounter);
-        // store the metadata
-        _setMetadata(_tokenCounter, metadata_);
-        // deploy a new ERC20 token for the NFT token
-        _deployERC20Token(_tokenCounter);
-        // increment token counter
-        _tokenCounter = _tokenCounter.add(1);
+        _mintAndSetMetadataAndDeployERC20(receiver, metadata_);
     }
 
     /* === CONTROL FUNCTIONS === */
@@ -235,6 +219,21 @@ contract CopyrightNFT is Ownable, ReentrancyGuard, ERC721, EIP712 {
             "ERC721: you can't set minter to the same address"
         );
         _minter = minter_;
+    }
+
+    /// @dev Internal function to mint a new NFT token, set its metadata and deploy a new ERC20
+    /// @param receiver Address of the user
+    /// @param metadata_ Metadata of the song
+    function _mintAndSetMetadataAndDeployERC20(address receiver, Metadata memory metadata_) internal {
+        // no need to check receiver, will be taken care of by
+        // underlying mint function
+        _safeMint(receiver, _tokenCounter);
+        // store the metadata
+        _setMetadata(_tokenCounter, metadata_);
+        // deploy a new ERC20 token for the NFT token
+        _deployERC20Token(_tokenCounter);
+        // increment token counter
+        _tokenCounter = _tokenCounter.add(1);
     }
 
     /// @dev Internal function to set metadata for the NFT token
