@@ -22,7 +22,7 @@ jobs:
       - run: yarn global add solhint
       - run: solhint contracts/**/*.sol
 
-  tests_full:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
