@@ -286,7 +286,9 @@ describe('CopyrightNFT', () => {
       expect(metadata.artist).to.be.equal(METADATA.artist);
       expect(metadata.album).to.be.equal(METADATA.album);
       expect(metadata.songURL).to.be.equal(METADATA.songURL);
+
       await copyrightNFT.connect(user1).setMetadata(1, METADATA2);
+
       metadata = await copyrightNFT.getMetadata(1);
       expect(metadata.songName).to.be.equal(METADATA2.songName);
       expect(metadata.artist).to.be.equal(METADATA2.artist);
@@ -314,12 +316,16 @@ describe('CopyrightNFT', () => {
       const erc20tokenAddress = await copyrightNFT.getErc20Token(1);
       const ERC20Token = await ethers.getContractFactory('ERC20Template');
       const erc20token = await ERC20Token.attach(erc20tokenAddress);
-
+      
+      // before buy, the buyer have a balance of 0 tokens to buy the song
       expect(await erc20token.balanceOf(user2.address)).to.be.equal(0);
 
+      // buy the song
       await copyrightNFT.connect(user2).buySong(1, { value: PRICE });
 
+      // after buy, the buyer have a balance of 1 tokens to buy the song
       expect(await erc20token.balanceOf(user2.address)).to.be.equal(1);
+      // after buy, the seller have a balance of 1 ETH
       expect(await copyrightNFT.getCopyrightBalance(user1.address)).to.be.equal(
         PRICE
       );
@@ -342,8 +348,10 @@ describe('CopyrightNFT', () => {
       );
       const balanceBefore = await user2.getBalance();
 
+      // collect copyright gains
       await copyrightNFT.connect(user2).collectCopyrightGains();
 
+      // the seller has the same balance, 0 ETH
       const balanceAfter = await user2.getBalance();
       expect(
         +ethers.utils.formatUnits(balanceAfter.sub(balanceBefore).toString())
@@ -356,8 +364,10 @@ describe('CopyrightNFT', () => {
       );
       const balanceBefore = await user1.getBalance();
 
+      // collect copyright gains
       await copyrightNFT.connect(user1).collectCopyrightGains();
 
+      // the seller has a balance of 1 ETH
       expect(await copyrightNFT.getCopyrightBalance(user1.address)).to.be.equal(
         0
       );
@@ -405,7 +415,7 @@ describe('CopyrightNFT', () => {
           account: user1.address
         }
       );
-      // redeem
+      // a non-minter tries to redeem and fails
       await expect(
         copyrightNFT.connect(user1).redeem(user1.address, METADATA, signature)
       ).to.be.reverted;
